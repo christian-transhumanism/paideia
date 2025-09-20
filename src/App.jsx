@@ -245,9 +245,45 @@ function About({ setRoute }) {
   );
 }
 
-function ModulesPage({ onOpenModule, progress }) {
+function ModuleTabs({ active, setRoute }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <button
+        type="button"
+        onClick={() => setRoute?.({ name: "modules" })}
+        className={classNames(
+          "px-4 py-2 rounded-xl text-sm transition-colors border",
+          active === "all"
+            ? "bg-blue-500/30 border-blue-300/40 text-white"
+            : "bg-white/10 border-white/20 hover:bg-white/20 text-gray-200"
+        )}
+      >
+        All
+      </button>
+      {UNITS.map((u, idx) => (
+        <button
+          key={u.id}
+          type="button"
+          onClick={() => setRoute?.({ name: "unit", id: u.id })}
+          className={classNames(
+            "px-4 py-2 rounded-xl text-sm transition-colors border",
+            active === u.id
+              ? "bg-blue-500/30 border-blue-300/40 text-white"
+              : "bg-white/10 border-white/20 hover:bg-white/20 text-gray-200"
+          )}
+        >
+          {`Unit ${idx + 1}`}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function ModulesPage({ onOpenModule, progress, setRoute }) {
   return (
     <div className="space-y-4">
+      <ModuleTabs active="all" setRoute={setRoute} />
+
       {MODULES.map((m)=> (
         <ChromeCard key={m.id}>
           <div className="flex items-start justify-between gap-3">
@@ -279,6 +315,8 @@ function UnitView({ unitId, setRoute, progress }) {
   if (!unit) return <p>Unit not found.</p>;
   return (
     <div className="space-y-4">
+      <ModuleTabs active={unitId} setRoute={setRoute} />
+
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">{unit.title}</h2>
         <ChromeButton onClick={()=> setRoute({ name:'about' })}>Back to About</ChromeButton>
@@ -729,7 +767,7 @@ export default function App() {
     <Shell role={role} setRole={setRole} route={route} setRoute={setRoute}>
       {route.name === "home" && <Home setRoute={setRoute} />}
       {route.name === "about" && <About setRoute={setRoute} />}
-      {route.name === "modules" && <ModulesPage onOpenModule={(id)=> setRoute({ name:"module", id })} progress={progress} />}
+      {route.name === "modules" && <ModulesPage onOpenModule={(id)=> setRoute({ name:"module", id })} progress={progress} setRoute={setRoute} />}
       {route.name === "unit" && <UnitView unitId={route.id} setRoute={setRoute} progress={progress} />}
       {route.name === "module" && <ModuleView moduleId={route.id} setRoute={setRoute} role={role} progress={progress} />}
       {route.name === "lesson" && <LessonView id={route.id} setRoute={setRoute} role={role} progress={progress} setProgress={setProgress} />}
